@@ -18,3 +18,8 @@ If you are also running AppArmor, this line belongs in tcpdump's profile:
 
     owner /var/log/capturator/* w,
 
+after which you'll have to do something like this:
+
+    sudo apparmor_parser -r /etc/apparmor.d/usr.sbin.tcpdump
+
+
