@@ -1,0 +1,23 @@
+Capturator is a simple system service that captures all
+network traffic to /var/log/capturator. It's intended
+to be used on production and development servers with
+modest traffic volumes so that one can go back in time
+to examine problems.
+
+By default it captures all packets on eth0 and saves them
+for a week.
+
+The capturator file itself belongs in /etc/init.d. On Ubuntu,
+you set it up with
+
+    sudo update-rc.d capturator defaults
+
+For the cleanup, put capturator.cron into /etc/cron.daily.
+
+Both files should be executable.
+
+If you are also running AppArmor, this line belongs in tcpdump's
+profile:
+
+    owner /var/log/capturator/* w,
+

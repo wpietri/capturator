@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# daily cron script for cleaning up capturator logs. 
+
+find /var/log/capturator \( -name \*.tcpdump -o -name \*.tcpdump.gz \) -type f -mtime +7 | xargs -r rm
+find /var/log/capturator -name \*.tcpdump -type f -mtime +1 | xargs -r gzip 

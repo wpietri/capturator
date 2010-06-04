@@ -1,0 +1,91 @@
+#!/bin/bash
+#
+# Author:       William Pietri <william@scissor.com>
+#
+# chkconfig:	345 97 03
+#
+# description:  Continuously captures particular packets of interest.
+#
+# processname:  capturator
+
+MYNAME="capturator"
+LOGDIR="/var/log/$MYNAME"
+LOGFILE="${LOGDIR}/activity.log"
+
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+start() {
+        if [ ! -d $LOGDIR ]; then
+	  mkdir -p $LOGDIR     
+	fi
+        if [ ! -d $LOGDIR ]; then
+	  echo "Can't log captures to $LOGDIR"
+	  exit 1    
+	fi
+	echo -n $"Starting ${MYNAME}: "
+	daemon $0 run
+	echo
+}
+
+stop() {
+	echo -n $"Stopping ${MYNAME}: "
+	killproc ${MYNAME}
+	echo
+}
+
+restart() {
+	stop
+	start
+}
+
+# This is necessary because the daemon() function doesn't understand
+# how to put something in the background. 
+run() {
+	$0 really_run &
+}
+
+
+really_run() {
+        # create the pid file that daemon() looks for
+        echo $$ >> /var/run/${MYNAME}.pid
+	echo `date`: starting capture loop >> $LOGFILE
+	while true; do
+	    NOW=`date +%Y%m%d-%H%M%S`
+	    CAPFILE="${LOGDIR}/${HOSTNAME}-${NOW}.tcpdump"
+	    export CAPFILE LOGFILE
+   	    echo `date`: starting capture to $CAPFILE >> $LOGFILE
+            sh -c "/usr/sbin/tcpdump -s 2000 -c 100000 -w $CAPFILE 2>> $LOGFILE >> $LOGFILE"
+	    nice gzip $CAPFILE &
+   	    echo `date`: capture complete >> $LOGFILE
+	done
+}
+
+
+
+case "$1" in
+  start)
+	start
+	;;
+  stop) 
+	stop
+	;;
+  status)
+	status yum-updatesd
+	RETVAL=$?
+	;;
+  run)
+   	run
+	;;
+  really_run)
+   	really_run
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status}"
+	exit 1
+esac
+
+exit $RETVAL
