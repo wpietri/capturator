@@ -14,7 +14,7 @@ LOGFILE="${LOGDIR}/activity.log"
 
 
 # source function library
-. /etc/rc.d/init.d/functions
+. /lib/lsb/init-functions
 
 RETVAL=0
 
@@ -27,7 +27,7 @@ start() {
 	  exit 1    
 	fi
 	echo -n $"Starting ${MYNAME}: "
-	daemon $0 run
+	start_daemon $0 run
 	echo
 }
 
