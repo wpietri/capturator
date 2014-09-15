@@ -23,3 +23,13 @@ after which you'll have to do something like this:
     sudo apparmor_parser -r /etc/apparmor.d/usr.sbin.tcpdump
 
 
+TODO
+
+* make proper packages
+* after each file closes:
+    * look for old uncompressed packages
+    * check total disk space and delete early if needed
+* add a config file that includes
+    * control of disk space limits
+    * a tcpdump expression to ignore certain packets
+
